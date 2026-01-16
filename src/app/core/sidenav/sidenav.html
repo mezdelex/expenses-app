@@ -1,0 +1,13 @@
+<div class="menu-button-container">
+  <button matMiniFab (click)="drawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+</div>
+<mat-drawer-container hasBackdrop="true">
+  <mat-drawer #drawer mode="over" position="end"></mat-drawer>
+  <mat-drawer-content>
+    <div class="sidenav-content-container">
+      <router-outlet />
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

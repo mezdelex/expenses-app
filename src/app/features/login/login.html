@@ -8,15 +8,25 @@
         <mat-form-field>
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" />
+          @if (loginForm.get('email')?.hasError('required')) {
+            <mat-error>Email is required</mat-error>
+          } @else if (loginForm.get('email')?.hasError('validEmail')) {
+            <mat-error>Enter a valid email address</mat-error>
+          }
         </mat-form-field>
         <mat-form-field>
           <mat-label>Password</mat-label>
           <input matInput type="password" formControlName="password" />
+          @if (loginForm.get('password')?.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+          } @else if (loginForm.get('password')?.hasError('minlength')) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+          }
         </mat-form-field>
       </div>
     </mat-card-content>
     <mat-card-actions class="login-card-actions-container">
-      <button matButton="filled">Submit</button>
+      <button matButton="filled" [disabled]="loginForm.invalid">Submit</button>
     </mat-card-actions>
   </mat-card>
 </form>

@@ -1,5 +1,5 @@
 <div class="menu-button-container">
-  <button matMiniFab (click)="drawer.toggle()">
+  <button matMiniFab (click)="drawer.toggle()" [hidden]="!authService.isLoggedIn()">
     <mat-icon>menu</mat-icon>
   </button>
 </div>

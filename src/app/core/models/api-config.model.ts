@@ -1,4 +1,7 @@
 export interface ApiConfig {
   baseUrl: string;
-  loginEndpoint: string;
+
+  applicationUsersLogoutEndpoint: string;
+  identityInfoEndpoint: string;
+  identityLoginEndpoint: string;
 }

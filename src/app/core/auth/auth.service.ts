@@ -3,41 +3,51 @@ import { Auth } from '../models/auth.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NotificationService } from '../notifications/notifications.service';
 import { Router } from '@angular/router';
-import { Token } from '../models/token.model';
-import { computed, effect, inject, Injectable, Injector, signal } from '@angular/core';
+import { User } from '../models/user.model';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private _apiConfig = inject(API_CONFIG);
   private _httpClient = inject(HttpClient);
-  private _injector = inject(Injector);
   private _notificationService = inject(NotificationService);
   private _router = inject(Router);
-  private _token = signal<Token | null>(null);
+  private _user = signal<User | null>(null);
 
-  public token = this._token.asReadonly();
+  public user = this._user.asReadonly();
 
   public constructor() {
-    effect(
-      () =>
-        this.isLoggedIn()
-          ? this._router.navigate(['/expenses'])
-          : this._router.navigate(['/login']),
-      { injector: this._injector },
-    );
+    effect((): void => {
+      this.isLoggedIn() ? this._router.navigate(['/expenses']) : this._router.navigate(['/login']);
+    });
   }
 
-  public isLoggedIn = computed(() => this._token());
+  public isLoggedIn = computed(() => this._user());
 
   public login = (auth: Auth): void => {
     this._httpClient
-      .post<Token>(`${this._apiConfig.baseUrl}${this._apiConfig.loginEndpoint}`, auth)
+      .post(`${this._apiConfig.baseUrl}${this._apiConfig.identityLoginEndpoint}`, auth)
       .subscribe({
-        next: (token: Token) => this._token.set(token),
+        next: () => this.loadUser(),
         error: (err: HttpErrorResponse) =>
           this._notificationService.showError(err.error?.message || err.message),
       });
   };
 
-  public logout = (): void => this._token.set(null);
+  public loadUser = (): void => {
+    this._httpClient
+      .get<User>(`${this._apiConfig.baseUrl}${this._apiConfig.identityInfoEndpoint}`)
+      .subscribe((user) => this._user.set(user));
+  };
+
+  public logout = (): void => {
+    this._httpClient
+      .get(`${this._apiConfig.baseUrl}${this._apiConfig.applicationUsersLogoutEndpoint}`)
+      .subscribe({
+        next: () => this._user.set(null),
+        error: (err: HttpErrorResponse) => {
+          this._notificationService.showError(err.error?.message || err.message);
+        },
+      });
+  };
 }

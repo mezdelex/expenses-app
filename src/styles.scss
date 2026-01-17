@@ -7,11 +7,14 @@
   gap: 1rem;
 }
 
+.expenses-card-container,
+.expenses-card-content-container,
 .login-card-container,
 .login-card-content-container {
   @include base-column-flex;
 }
 
+.expenses-card-actions-container,
 .login-card-actions-container {
   @include base-column-flex;
   justify-content: center;

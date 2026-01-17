@@ -6,8 +6,8 @@ import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
-  selector: 'app-sidenav',
   imports: [MatButtonModule, MatIconModule, MatSidenavModule, RouterOutlet],
+  selector: 'app-sidenav',
   templateUrl: './sidenav.html',
 })
 export class Sidenav {

@@ -4,9 +4,4 @@ import { environment } from '../../../environments/environment';
 
 export const API_CONFIG = new InjectionToken<ApiConfig>('API_CONFIG');
 
-export function provideApiConfig(): Provider {
-  return {
-    provide: API_CONFIG,
-    useValue: environment,
-  };
-}
+export const provideApiConfig = (): Provider => ({ provide: API_CONFIG, useValue: environment });

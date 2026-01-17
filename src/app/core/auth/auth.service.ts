@@ -4,7 +4,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NotificationService } from '../notifications/notifications.service';
 import { Router } from '@angular/router';
 import { Token } from '../models/token.model';
-import { catchError, throwError } from 'rxjs';
 import { computed, effect, inject, Injectable, Injector, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -33,7 +32,6 @@ export class AuthService {
   public login = (auth: Auth): void => {
     this._httpClient
       .post<Token>(`${this._apiConfig.baseUrl}${this._apiConfig.loginEndpoint}`, auth)
-      .pipe(catchError((err: HttpErrorResponse) => throwError(() => err)))
       .subscribe({
         next: (token: Token) => this._token.set(token),
         error: (err: HttpErrorResponse) =>

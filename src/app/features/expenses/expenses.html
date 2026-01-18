@@ -1,6 +1,6 @@
 <mat-tab-group class="expenses-tab-group-container">
   <mat-tab label="Expenses">
-    <table mat-table [dataSource]="EXPENSES" class="mat-elevation-z8">
+    <table mat-table [dataSource]="expenses()" class="mat-elevation-z8">
       <tr mat-header-row *matHeaderRowDef="displayedExpensesColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedExpensesColumns"></tr>
 
@@ -12,7 +12,9 @@
             @if (element[col]) {
               {{ element[col] }}
             } @else {
-              <mat-icon onclick="console.log('lol')">remove_circle</mat-icon>
+              <button matIconButton (click)="removeExpense(element)">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
             }
           </td>
         </ng-container>

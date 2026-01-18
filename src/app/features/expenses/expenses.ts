@@ -61,17 +61,25 @@ export class Expenses {
 
   public constructor() {
     if (this._authService.user()) {
-      this._expensesService.getExpensesByUserEmail(this._authService.user()!.email).subscribe({
-        next: (paginatedResponse: PaginatedResponse<Expense>) => {
-          this.expenses.set(paginatedResponse.items);
-        },
-        error: (err: HttpErrorResponse) =>
-          this._notificationService.showError(err.error?.message || err.message),
-      });
+      this.loadExpenses();
     }
   }
 
-  public removeExpense = (expense: Expense) => {
-    this.expenses.update((_) => _.filter((x) => x.id !== expense.id));
+  public deleteExpense = (expense: Expense) => {
+    this._expensesService.deleteExpense(expense.id).subscribe({
+      next: () => this.loadExpenses(),
+      error: (err: HttpErrorResponse) =>
+        this._notificationService.showError(err.error?.message || err.message),
+    });
+  };
+
+  public loadExpenses = () => {
+    this._expensesService.getExpensesByUserEmail(this._authService.user()!.email).subscribe({
+      next: (paginatedResponse: PaginatedResponse<Expense>) => {
+        this.expenses.set(paginatedResponse.items);
+      },
+      error: (err: HttpErrorResponse) =>
+        this._notificationService.showError(err.error?.message || err.message),
+    });
   };
 }

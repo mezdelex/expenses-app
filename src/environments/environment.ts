@@ -3,6 +3,7 @@ export const environment = {
 
   applicationUsersLogoutEndpoint: '/api/applicationusers/logout',
   expensesAllEndpoint: '/api/expenses/all',
+  expensesDeleteEndpoint: '/api/expenses/',
   identityInfoEndpoint: '/api/identity/manage/info',
   identityLoginEndpoint: '/api/identity/login?useCookies=true&useSessionCookies=true',
 };

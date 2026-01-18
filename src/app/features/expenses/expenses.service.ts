@@ -11,8 +11,14 @@ export class ExpensesService {
   private _httpClient = inject(HttpClient);
 
   public getExpensesByUserEmail = (email: string): Observable<PaginatedResponse<Expense>> =>
+    // TODO: include pagination
     this._httpClient.post<PaginatedResponse<Expense>>(
       `${this._apiConfig.baseUrl}${this._apiConfig.expensesAllEndpoint}`,
       { email },
+    );
+
+  public deleteExpense = (id: string): Observable<void> =>
+    this._httpClient.delete<void>(
+      `${this._apiConfig.baseUrl}${this._apiConfig.expensesDeleteEndpoint}${id}`,
     );
 }

@@ -12,7 +12,7 @@
             @if (element[col]) {
               {{ element[col] }}
             } @else {
-              <button matIconButton (click)="removeExpense(element)">
+              <button matIconButton (click)="deleteExpense(element)">
                 <mat-icon>remove_circle</mat-icon>
               </button>
             }

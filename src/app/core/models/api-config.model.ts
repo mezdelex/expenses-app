@@ -3,6 +3,7 @@ export interface ApiConfig {
 
   applicationUsersLogoutEndpoint: string;
   expensesAllEndpoint: string;
+  expensesDeleteEndpoint: string;
   identityInfoEndpoint: string;
   identityLoginEndpoint: string;
 }

@@ -20,6 +20,12 @@
         </ng-container>
       }
     </table>
+    <mat-paginator
+      (page)="updatePagination($event)"
+      [length]="pagination().length"
+      [pageSizeOptions]="[5, 10]"
+      [pageSize]="pagination().pageSize"
+    />
   </mat-tab>
   <mat-tab label="Categories">
     <table mat-table [dataSource]="CATEGORIES" class="mat-elevation-z8">

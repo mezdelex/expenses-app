@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { NotificationService } from '../../core/notifications/notifications.service';
@@ -20,6 +21,7 @@ import { nameof } from '../../shared/utils/nameof.util';
     MatButtonModule,
     MatCardModule,
     MatIconModule,
+    MatPaginatorModule,
     MatTableModule,
     MatTabsModule,
   ],
@@ -58,6 +60,7 @@ export class Expenses {
     'actions',
   ];
   public expenses = signal<Expense[]>([]);
+  public pagination = signal<PageEvent>({ pageIndex: 0, pageSize: 10, length: 0 });
 
   public constructor() {
     if (this._authService.user()) {
@@ -67,19 +70,36 @@ export class Expenses {
 
   public deleteExpense = (expense: Expense) => {
     this._expensesService.deleteExpense(expense.id).subscribe({
-      next: () => this.loadExpenses(),
+      next: () => {
+        this.loadExpenses();
+      },
       error: (err: HttpErrorResponse) =>
         this._notificationService.showError(err.error?.message || err.message),
     });
   };
 
   public loadExpenses = () => {
-    this._expensesService.getExpensesByUserEmail(this._authService.user()!.email).subscribe({
-      next: (paginatedResponse: PaginatedResponse<Expense>) => {
-        this.expenses.set(paginatedResponse.items);
-      },
-      error: (err: HttpErrorResponse) =>
-        this._notificationService.showError(err.error?.message || err.message),
-    });
+    this._expensesService
+      .getExpensesByUserEmail(this._authService.user()!.email, {
+        page: this.pagination().pageIndex,
+        pageSize: this.pagination().pageSize,
+      })
+      .subscribe({
+        next: (paginatedResponse: PaginatedResponse<Expense>) => {
+          this.expenses.set(paginatedResponse.items);
+          this.pagination.set({
+            pageIndex: paginatedResponse.page,
+            pageSize: paginatedResponse.pageSize,
+            length: paginatedResponse.totalCount,
+          });
+        },
+        error: (err: HttpErrorResponse) =>
+          this._notificationService.showError(err.error?.message || err.message),
+      });
+  };
+
+  public updatePagination = ($event: PageEvent) => {
+    this.pagination.set($event);
+    this.loadExpenses();
   };
 }

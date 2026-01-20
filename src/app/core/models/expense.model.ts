@@ -1,7 +1,8 @@
 import { Category } from './category.model';
+import { Editable } from './editable.model';
 import { User } from './user.model';
 
-export interface Expense {
+export interface Expense extends Editable {
   id: string;
   name: string;
   description: string;

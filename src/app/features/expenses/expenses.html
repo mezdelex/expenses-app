@@ -12,16 +12,35 @@
         <tr mat-row *matRowDef="let row; columns: displayedExpensesColumns"></tr>
 
         @for (col of displayedExpensesColumns; track col) {
-          <!-- TODO: add inline-editing capabilities -->
           <ng-container [matColumnDef]="col">
-            <th mat-header-cell *matHeaderCellDef>{{ col.toLocaleUpperCase() }}</th>
-            <td mat-cell *matCellDef="let element">
-              @if (element[col]) {
-                {{ element[col] }}
+            <th mat-header-cell *matHeaderCellDef>{{ col.toUpperCase() }}</th>
+            <td mat-cell *matCellDef="let expense">
+              @if (col === 'actions') {
+                @if (!expense.isEditing) {
+                  <button mat-icon-button (click)="editExpense(expense)">
+                    <mat-icon>edit_circle</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="deleteExpense(expense)">
+                    <mat-icon>delete_circle</mat-icon>
+                  </button>
+                } @else {
+                  <button mat-icon-button color="primary" (click)="saveExpense(expense)">
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="cancelEditExpense(expense)">
+                    <mat-icon>close_circle</mat-icon>
+                  </button>
+                }
               } @else {
-                <button matIconButton (click)="deleteExpense(element)">
-                  <mat-icon>remove_circle</mat-icon>
-                </button>
+                @if (expense.isEditing && formGroups.get(expense)?.get(col)) {
+                  <form [formGroup]="formGroups.get(expense)!">
+                    <mat-form-field appearance="outline">
+                      <input matInput [type]="typeof expense[col]" [formControlName]="col" />
+                    </mat-form-field>
+                  </form>
+                } @else {
+                  {{ expense[col] }}
+                }
               }
             </td>
           </ng-container>
@@ -30,11 +49,13 @@
       <mat-paginator
         (page)="updatePagination($event)"
         [length]="expensesResource.value()?.totalCount"
+        [pageIndex]="expensesResource.value()?.page"
         [pageSizeOptions]="[5, 10]"
         [pageSize]="expensesResource.value()?.pageSize"
       />
     }
   </mat-tab>
+
   <mat-tab label="Categories">
     <table mat-table [dataSource]="CATEGORIES" class="mat-elevation-z8">
       <tr mat-header-row *matHeaderRowDef="displayedCategoriesColumns"></tr>
@@ -42,8 +63,12 @@
 
       @for (col of displayedCategoriesColumns; track col) {
         <ng-container [matColumnDef]="col">
-          <th mat-header-cell *matHeaderCellDef>{{ col.toLocaleUpperCase() }}</th>
-          <td mat-cell *matCellDef="let element">{{ element[col] }}</td>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ col.toUpperCase() }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element[col] }}
+          </td>
         </ng-container>
       }
     </table>

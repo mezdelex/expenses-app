@@ -103,19 +103,14 @@ export class Expenses {
     }
   }
 
-  public saveExpense(expense: Expense): void {
+  public patchExpense(expense: Expense): void {
     const formGroup = this.formGroups.get(expense);
     if (!formGroup || formGroup.invalid) return;
 
-    const updatedExpense: Expense = {
-      ...expense,
-      ...formGroup.value,
-    };
-    console.log(updatedExpense);
-
-    // TODO: persist and reload
-
-    expense.isEditing = false;
+    const patchedExpense: Expense = { ...expense, ...formGroup.value };
+    this._expensesService.patchExpense(patchedExpense).subscribe(() => {
+      this.expensesResource.reload();
+    });
   }
 
   public updatePagination(event: PageEvent): void {

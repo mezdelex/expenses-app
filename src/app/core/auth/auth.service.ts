@@ -28,9 +28,12 @@ export class AuthService {
     this._httpClient
       .post(`${this._apiConfig.baseUrl}${this._apiConfig.identityLoginEndpoint}`, auth)
       .subscribe({
-        next: () => this.loadUser(),
-        error: (err: HttpErrorResponse) =>
-          this._notificationService.showError(err.error?.message || err.message),
+        next: (): void => {
+          this.loadUser();
+        },
+        error: (err: HttpErrorResponse): void => {
+          this._notificationService.showError(err.error?.message || err.message);
+        },
       });
   }
 
@@ -44,8 +47,10 @@ export class AuthService {
     this._httpClient
       .get(`${this._apiConfig.baseUrl}${this._apiConfig.applicationUsersLogoutEndpoint}`)
       .subscribe({
-        next: () => this._user.set(null),
-        error: (err: HttpErrorResponse) => {
+        next: (): void => {
+          this._user.set(null);
+        },
+        error: (err: HttpErrorResponse): void => {
           this._notificationService.showError(err.error?.message || err.message);
         },
       });

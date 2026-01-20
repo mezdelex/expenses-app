@@ -32,8 +32,16 @@ export class ExpensesService {
     });
   }
 
-  public deleteExpense = (id: string): Observable<void> =>
-    this._httpClient.delete<void>(
+  public deleteExpense(id: string): Observable<void> {
+    return this._httpClient.delete<void>(
       `${this._apiConfig.baseUrl}${this._apiConfig.expensesDeleteEndpoint}${id}`,
     );
+  }
+
+  public patchExpense(expense: Expense): Observable<void> {
+    return this._httpClient.patch<void>(
+      `${this._apiConfig.baseUrl}${this._apiConfig.expensesPatchEndpoint}`,
+      expense,
+    );
+  }
 }

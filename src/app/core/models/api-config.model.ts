@@ -4,6 +4,7 @@ export interface ApiConfig {
   applicationUsersLogoutEndpoint: string;
   expensesAllEndpoint: string;
   expensesDeleteEndpoint: string;
+  expensesPatchEndpoint: string;
   identityInfoEndpoint: string;
   identityLoginEndpoint: string;
 }

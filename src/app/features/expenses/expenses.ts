@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { Expense } from '../../core/models/expense.model';
 import { ExpensesService } from './expenses.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -89,9 +89,15 @@ export class Expenses {
       this.formGroups.set(
         expense,
         this._formBuilder.group({
-          [nameof<Expense>((x) => x.name)]: [expense.name],
-          [nameof<Expense>((x) => x.description)]: [expense.description],
-          [nameof<Expense>((x) => x.value)]: [expense.value],
+          [nameof<Expense>((x) => x.name)]: [
+            expense.name,
+            [Validators.required, Validators.maxLength(32)],
+          ],
+          [nameof<Expense>((x) => x.description)]: [
+            expense.description,
+            [Validators.required, Validators.maxLength(256)],
+          ],
+          [nameof<Expense>((x) => x.value)]: [expense.value, [Validators.required]],
         }),
       );
     }

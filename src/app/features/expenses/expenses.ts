@@ -47,6 +47,7 @@ export class Expenses {
     { id: '2', name: 'Transport', description: 'Transport expenses' },
   ];
   public readonly displayedExpensesColumns = [
+    nameof<Expense>((x) => x.id),
     nameof<Expense>((x) => x.name),
     nameof<Expense>((x) => x.description),
     nameof<Expense>((x) => x.value),

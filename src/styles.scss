@@ -7,7 +7,12 @@
   gap: 1rem;
 }
 
-.expenses-tab-group-container,
+.expenses-tab-group-container {
+  @include base-column-flex();
+  height: 90vh;
+  width: 80vw;
+}
+
 .login-card-container,
 .login-card-content-container {
   @include base-column-flex;
@@ -15,8 +20,8 @@
 
 .login-card-actions-container {
   @include base-column-flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .menu-button-container {
@@ -32,4 +37,14 @@
   height: 100vh;
   justify-content: center;
   width: 100vw;
+}
+
+.table-container {
+  height: 50vh;
+}
+
+.table-buttons-container {
+  @include base-column-flex;
+  align-items: flex-end;
+  justify-content: center;
 }

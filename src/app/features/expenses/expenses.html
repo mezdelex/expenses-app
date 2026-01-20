@@ -3,49 +3,60 @@
     @if (expensesResource.isLoading()) {
       <mat-spinner />
     } @else {
-      <table
-        mat-table
-        [dataSource]="expensesResource.value()?.items ?? []"
-        class="mat-elevation-z8"
-      >
-        <tr mat-header-row *matHeaderRowDef="displayedExpensesColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedExpensesColumns"></tr>
+      <div class="table-buttons-container">
+        <button matButton="outlined" color="primary">New</button>
+      </div>
+      <div class="table-container">
+        <table
+          mat-table
+          [dataSource]="expensesResource.value()?.items ?? []"
+          class="mat-elevation-z8"
+        >
+          <tr mat-header-row *matHeaderRowDef="displayedExpensesColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedExpensesColumns"></tr>
 
-        @for (col of displayedExpensesColumns; track col) {
-          <ng-container [matColumnDef]="col">
-            <th mat-header-cell *matHeaderCellDef>{{ col.toUpperCase() }}</th>
-            <td mat-cell *matCellDef="let expense">
-              @if (col === 'actions') {
-                @if (!expense.isEditing) {
-                  <button mat-icon-button (click)="editExpense(expense)">
-                    <mat-icon>edit_circle</mat-icon>
-                  </button>
-                  <button mat-icon-button (click)="deleteExpense(expense)">
-                    <mat-icon>delete_circle</mat-icon>
-                  </button>
+          @for (col of displayedExpensesColumns; track col) {
+            <ng-container [matColumnDef]="col">
+              <th mat-header-cell *matHeaderCellDef>{{ col.toUpperCase() }}</th>
+              <td mat-cell *matCellDef="let expense">
+                @if (col === 'actions') {
+                  @if (!expense.isEditing) {
+                    <button matIconButton (click)="editExpense(expense)">
+                      <mat-icon>edit_circle</mat-icon>
+                    </button>
+                    <button matIconButton (click)="deleteExpense(expense)">
+                      <mat-icon>delete_circle</mat-icon>
+                    </button>
+                  } @else {
+                    <button matIconButton color="primary" (click)="saveExpense(expense)">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                    <button matIconButton (click)="cancelEditExpense(expense)">
+                      <mat-icon>close_circle</mat-icon>
+                    </button>
+                  }
                 } @else {
-                  <button mat-icon-button color="primary" (click)="saveExpense(expense)">
-                    <mat-icon>check_circle</mat-icon>
-                  </button>
-                  <button mat-icon-button (click)="cancelEditExpense(expense)">
-                    <mat-icon>close_circle</mat-icon>
-                  </button>
+                  @if (expense.isEditing && formGroups.get(expense)?.get(col)) {
+                    <form [formGroup]="formGroups.get(expense)!">
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                        <input
+                          [formControlName]="col"
+                          [step]="typeof expense[col] === 'number' ? '.1' : null"
+                          [type]="typeof expense[col]"
+                          matInput
+                          required
+                        />
+                      </mat-form-field>
+                    </form>
+                  } @else {
+                    {{ expense[col] }}
+                  }
                 }
-              } @else {
-                @if (expense.isEditing && formGroups.get(expense)?.get(col)) {
-                  <form [formGroup]="formGroups.get(expense)!">
-                    <mat-form-field appearance="outline">
-                      <input matInput [type]="typeof expense[col]" [formControlName]="col" />
-                    </mat-form-field>
-                  </form>
-                } @else {
-                  {{ expense[col] }}
-                }
-              }
-            </td>
-          </ng-container>
-        }
-      </table>
+              </td>
+            </ng-container>
+          }
+        </table>
+      </div>
       <mat-paginator
         (page)="updatePagination($event)"
         [length]="expensesResource.value()?.totalCount"

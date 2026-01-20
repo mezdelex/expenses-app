@@ -8,13 +8,13 @@ import { computed, effect, inject, Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _apiConfig = inject(API_CONFIG);
-  private _httpClient = inject(HttpClient);
-  private _notificationService = inject(NotificationService);
-  private _router = inject(Router);
-  private _user = signal<User | null>(null);
+  private readonly _apiConfig = inject(API_CONFIG);
+  private readonly _httpClient = inject(HttpClient);
+  private readonly _notificationService = inject(NotificationService);
+  private readonly _router = inject(Router);
+  private readonly _user = signal<User | null>(null);
 
-  public user = this._user.asReadonly();
+  public readonly user = this._user.asReadonly();
 
   public constructor() {
     effect((): void => {
@@ -22,9 +22,9 @@ export class AuthService {
     });
   }
 
-  public isLoggedIn = computed(() => this._user());
+  public readonly isLoggedIn = computed(() => this._user());
 
-  public login = (auth: Auth): void => {
+  public login(auth: Auth): void {
     this._httpClient
       .post(`${this._apiConfig.baseUrl}${this._apiConfig.identityLoginEndpoint}`, auth)
       .subscribe({
@@ -32,15 +32,15 @@ export class AuthService {
         error: (err: HttpErrorResponse) =>
           this._notificationService.showError(err.error?.message || err.message),
       });
-  };
+  }
 
-  public loadUser = (): void => {
+  public loadUser(): void {
     this._httpClient
       .get<User>(`${this._apiConfig.baseUrl}${this._apiConfig.identityInfoEndpoint}`)
       .subscribe((user) => this._user.set(user));
-  };
+  }
 
-  public logout = (): void => {
+  public logout(): void {
     this._httpClient
       .get(`${this._apiConfig.baseUrl}${this._apiConfig.applicationUsersLogoutEndpoint}`)
       .subscribe({
@@ -49,5 +49,5 @@ export class AuthService {
           this._notificationService.showError(err.error?.message || err.message);
         },
       });
-  };
+  }
 }

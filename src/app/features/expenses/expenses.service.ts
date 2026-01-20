@@ -2,23 +2,35 @@ import { API_CONFIG } from '../../core/config/api.config';
 import { BaseRequest } from '../../core/models/base-request.model';
 import { Expense } from '../../core/models/expense.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { PaginatedResponse } from '../../core/models/paginated-response.model';
-import { inject, Injectable } from '@angular/core';
+import { User } from '../../core/models/user.model';
+import { firstValueFrom, Observable } from 'rxjs';
+import { inject, Injectable, resource, ResourceRef, Signal } from '@angular/core';
 
 @Injectable()
 export class ExpensesService {
-  private _apiConfig = inject(API_CONFIG);
-  private _httpClient = inject(HttpClient);
+  private readonly _apiConfig = inject(API_CONFIG);
+  private readonly _httpClient = inject(HttpClient);
 
-  public getExpensesByUserEmail = (
-    email: string,
-    baseRequest?: BaseRequest | null,
-  ): Observable<PaginatedResponse<Expense>> =>
-    this._httpClient.post<PaginatedResponse<Expense>>(
-      `${this._apiConfig.baseUrl}${this._apiConfig.expensesAllEndpoint}`,
-      { email, ...baseRequest },
-    );
+  public getExpensesByUserEmailResource(
+    user: Signal<User | null>,
+    baseRequest: Signal<BaseRequest>,
+  ): ResourceRef<PaginatedResponse<Expense> | undefined> {
+    return resource({
+      params: () => ({ user: user(), baseRequest: baseRequest() }),
+      loader: ({ params }) =>
+        firstValueFrom(
+          this._httpClient.post<PaginatedResponse<Expense>>(
+            `${this._apiConfig.baseUrl}${this._apiConfig.expensesAllEndpoint}`,
+            {
+              email: params.user?.email,
+              page: params.baseRequest.page,
+              pageSize: params.baseRequest.pageSize,
+            },
+          ),
+        ),
+    });
+  }
 
   public deleteExpense = (id: string): Observable<void> =>
     this._httpClient.delete<void>(

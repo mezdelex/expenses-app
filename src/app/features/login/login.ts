@@ -22,17 +22,17 @@ import { validEmail } from '../../shared/validators/valid-email.validator';
   templateUrl: './login.html',
 })
 export class Login {
-  private _authService = inject(AuthService);
+  private readonly _authService = inject(AuthService);
 
-  public loginForm = new FormGroup({
+  public readonly loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, validEmail()]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
   });
 
-  public onSubmit = (): void => {
+  public onSubmit(): void {
     const { email, password } = this.loginForm.value;
     if (!email || !password) return;
 
     this._authService.login({ email, password });
-  };
+  }
 }

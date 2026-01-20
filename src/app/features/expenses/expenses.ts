@@ -1,10 +1,9 @@
 import { AuthService } from '../../core/auth/auth.service';
 import { Category } from '../../core/models/category.model';
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Expense } from '../../core/models/expense.model';
 import { ExpensesService } from './expenses.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,8 +11,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { NotificationService } from '../../core/notifications/notifications.service';
-import { PaginatedResponse } from '../../core/models/paginated-response.model';
 import { nameof } from '../../shared/utils/nameof.util';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   imports: [
@@ -22,6 +21,7 @@ import { nameof } from '../../shared/utils/nameof.util';
     MatCardModule,
     MatIconModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatTableModule,
     MatTabsModule,
   ],
@@ -30,11 +30,12 @@ import { nameof } from '../../shared/utils/nameof.util';
   templateUrl: './expenses.html',
 })
 export class Expenses {
-  private _authService = inject(AuthService);
-  private _expensesService = inject(ExpensesService);
-  private _notificationService = inject(NotificationService);
+  private readonly _authService = inject(AuthService);
+  private readonly _baseRequest = signal({ page: 0, pageSize: 10 });
+  private readonly _expensesService = inject(ExpensesService);
+  private readonly _notificationService = inject(NotificationService);
 
-  public CATEGORIES: Category[] = [
+  public readonly CATEGORIES: Category[] = [
     {
       id: 'first category guid',
       name: 'first name',
@@ -46,60 +47,38 @@ export class Expenses {
       description: 'second description',
     },
   ];
-  public displayedCategoriesColumns: string[] = [
+  public readonly displayedCategoriesColumns: string[] = [
     nameof<Category>((x) => x.id),
     nameof<Category>((x) => x.name),
     nameof<Category>((x) => x.description),
     'actions',
   ];
-  public displayedExpensesColumns: string[] = [
+  public readonly displayedExpensesColumns: string[] = [
     nameof<Expense>((x) => x.id),
     nameof<Expense>((x) => x.name),
     nameof<Expense>((x) => x.description),
     nameof<Expense>((x) => x.value),
     'actions',
   ];
-  public expenses = signal<Expense[]>([]);
-  public pagination = signal<PageEvent>({ pageIndex: 0, pageSize: 10, length: 0 });
+  public readonly expensesResource = this._expensesService.getExpensesByUserEmailResource(
+    this._authService.user,
+    this._baseRequest,
+  );
 
   public constructor() {
-    if (this._authService.user()) {
-      this.loadExpenses();
-    }
+    effect(() => {
+      if (this.expensesResource.error())
+        this._notificationService.showError(this.expensesResource.error()!.message);
+    });
   }
 
-  public deleteExpense = (expense: Expense) => {
-    this._expensesService.deleteExpense(expense.id).subscribe({
-      next: () => {
-        this.loadExpenses();
-      },
-      error: (err: HttpErrorResponse) =>
-        this._notificationService.showError(err.error?.message || err.message),
+  public deleteExpense(expense: Expense): void {
+    this._expensesService.deleteExpense(expense.id).subscribe(() => {
+      this.expensesResource.reload();
     });
-  };
+  }
 
-  public loadExpenses = () => {
-    this._expensesService
-      .getExpensesByUserEmail(this._authService.user()!.email, {
-        page: this.pagination().pageIndex,
-        pageSize: this.pagination().pageSize,
-      })
-      .subscribe({
-        next: (paginatedResponse: PaginatedResponse<Expense>) => {
-          this.expenses.set(paginatedResponse.items);
-          this.pagination.set({
-            pageIndex: paginatedResponse.page,
-            pageSize: paginatedResponse.pageSize,
-            length: paginatedResponse.totalCount,
-          });
-        },
-        error: (err: HttpErrorResponse) =>
-          this._notificationService.showError(err.error?.message || err.message),
-      });
-  };
-
-  public updatePagination = ($event: PageEvent) => {
-    this.pagination.set($event);
-    this.loadExpenses();
-  };
+  public updatePagination($event: PageEvent): void {
+    this._baseRequest.set({ page: $event.pageIndex, pageSize: $event.pageSize });
+  }
 }

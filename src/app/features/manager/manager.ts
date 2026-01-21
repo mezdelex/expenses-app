@@ -1,12 +1,16 @@
+import { AddExpenseDialog } from './components/add-expense-dialog/add-expense-dialog';
 import { AuthService } from '../../core/auth/auth.service';
 import { Category } from '../../core/models/category.model';
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
+import { ErrorsService } from '../../core/errors/errors.service';
 import { Expense } from '../../core/models/expense.model';
-import { ExpensesService } from './expenses.service';
+import { ExpensesService } from './services/expenses.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +26,7 @@ import { nameof } from '../../shared/utils/nameof.util';
     CommonModule,
     MatButtonModule,
     MatCardModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -32,14 +37,16 @@ import { nameof } from '../../shared/utils/nameof.util';
     ReactiveFormsModule,
   ],
   providers: [ExpensesService],
-  selector: 'app-expenses',
-  templateUrl: './expenses.html',
+  selector: 'app-manager',
+  templateUrl: './manager.html',
 })
-export class Expenses {
+export class Manager {
   private readonly _authService = inject(AuthService);
-  private readonly _baseRequest = signal({ page: 0, pageSize: 5 });
+  private readonly _dialog = inject(MatDialog);
+  private readonly _errorsService = inject(ErrorsService);
+  private readonly _expensesBaseRequest = signal({ page: 0, pageSize: 5 });
+  private readonly _expensesFormBuilder = inject(FormBuilder);
   private readonly _expensesService = inject(ExpensesService);
-  private readonly _formBuilder = inject(FormBuilder);
   private readonly _notificationService = inject(NotificationService);
 
   public readonly CATEGORIES: Category[] = [
@@ -58,11 +65,11 @@ export class Expenses {
     nameof<Category>((x) => x.name),
     nameof<Category>((x) => x.description),
   ];
-  public readonly expensesResource = this._expensesService.getExpensesByUserEmailResource(
+  public readonly expensesResource = this._expensesService.getExpensesPaginatedByUserEmailResource(
     this._authService.user,
-    this._baseRequest,
+    this._expensesBaseRequest,
   );
-  public readonly formGroups = new Map<Expense, FormGroup>();
+  public readonly expensesFormGroups = new Map<Expense, FormGroup>();
 
   public constructor() {
     effect(() => {
@@ -73,22 +80,27 @@ export class Expenses {
     });
   }
 
-  public cancelEditExpense(expense: Expense): void {
+  public handleCancelEditExpense(expense: Expense): void {
     expense.isEditing = false;
   }
 
-  public deleteExpense(expense: Expense): void {
-    this._expensesService.deleteExpense(expense.id).subscribe(() => {
-      this.expensesResource.reload();
+  public handleDeleteExpense(expense: Expense): void {
+    this._expensesService.deleteExpense(expense.id).subscribe({
+      next: () => {
+        this.expensesResource.reload();
+      },
+      error: (err: HttpErrorResponse) => {
+        this._errorsService.errorSubject.next(err);
+      },
     });
   }
 
-  public editExpense(expense: Expense): void {
+  public handleEditExpense(expense: Expense): void {
     expense.isEditing = true;
-    if (!this.formGroups.has(expense)) {
-      this.formGroups.set(
+    if (!this.expensesFormGroups.has(expense)) {
+      this.expensesFormGroups.set(
         expense,
-        this._formBuilder.group({
+        this._expensesFormBuilder.group({
           [nameof<Expense>((x) => x.name)]: [
             expense.name,
             [Validators.required, Validators.maxLength(32)],
@@ -103,17 +115,30 @@ export class Expenses {
     }
   }
 
-  public patchExpense(expense: Expense): void {
-    const formGroup = this.formGroups.get(expense);
-    if (!formGroup || formGroup.invalid) return;
+  public handleExpensePagination(event: PageEvent): void {
+    this._expensesBaseRequest.set({ page: event.pageIndex, pageSize: event.pageSize });
+  }
 
-    const patchedExpense: Expense = { ...expense, ...formGroup.value };
-    this._expensesService.patchExpense(patchedExpense).subscribe(() => {
+  public handleNewExpense(): void {
+    const dialogRef = this._dialog.open(AddExpenseDialog);
+
+    dialogRef.afterClosed().subscribe((): void => {
       this.expensesResource.reload();
     });
   }
 
-  public updatePagination(event: PageEvent): void {
-    this._baseRequest.set({ page: event.pageIndex, pageSize: event.pageSize });
+  public handlePatchExpense(expense: Expense): void {
+    const formGroup = this.expensesFormGroups.get(expense);
+    if (!formGroup || formGroup.invalid) return;
+
+    const patchedExpense: Expense = { ...expense, ...formGroup.value };
+    this._expensesService.patchExpense(patchedExpense).subscribe({
+      next: (): void => {
+        this.expensesResource.reload();
+      },
+      error: (err: HttpErrorResponse): void => {
+        this._errorsService.errorSubject.next(err);
+      },
+    });
   }
 }

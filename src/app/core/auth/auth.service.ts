@@ -1,7 +1,7 @@
 import { API_CONFIG } from '../config/api.config';
 import { Auth } from '../models/auth.model';
+import { ErrorsService } from '../errors/errors.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { NotificationService } from '../notifications/notifications.service';
 import { Router } from '@angular/router';
 import { User } from '../models/user.model';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
@@ -9,8 +9,8 @@ import { computed, effect, inject, Injectable, signal } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly _apiConfig = inject(API_CONFIG);
+  private readonly _errorsService = inject(ErrorsService);
   private readonly _httpClient = inject(HttpClient);
-  private readonly _notificationService = inject(NotificationService);
   private readonly _router = inject(Router);
   private readonly _user = signal<User | null>(null);
 
@@ -18,7 +18,7 @@ export class AuthService {
 
   public constructor() {
     effect((): void => {
-      this.isLoggedIn() ? this._router.navigate(['/expenses']) : this._router.navigate(['/login']);
+      this.isLoggedIn() ? this._router.navigate(['/manager']) : this._router.navigate(['/login']);
     });
   }
 
@@ -32,7 +32,7 @@ export class AuthService {
           this.loadUser();
         },
         error: (err: HttpErrorResponse): void => {
-          this._notificationService.showError(err.error?.message || err.message);
+          this._errorsService.errorSubject.next(err);
         },
       });
   }
@@ -40,7 +40,9 @@ export class AuthService {
   public loadUser(): void {
     this._httpClient
       .get<User>(`${this._apiConfig.baseUrl}${this._apiConfig.identityInfoEndpoint}`)
-      .subscribe((user) => this._user.set(user));
+      .subscribe((user): void => {
+        this._user.set(user);
+      });
   }
 
   public logout(): void {
@@ -51,7 +53,7 @@ export class AuthService {
           this._user.set(null);
         },
         error: (err: HttpErrorResponse): void => {
-          this._notificationService.showError(err.error?.message || err.message);
+          this._errorsService.errorSubject.next(err);
         },
       });
   }

@@ -1,10 +1,12 @@
 <mat-tab-group class="expenses-tab-group-container">
   <mat-tab label="Expenses">
     @if (expensesResource.isLoading()) {
-      <mat-spinner />
+      <div class="spinner-container">
+        <mat-spinner />
+      </div>
     } @else {
       <div class="table-buttons-container">
-        <button matButton="outlined" color="primary">New</button>
+        <button matButton="outlined" color="primary" (click)="handleNewExpense()">New</button>
       </div>
       <div class="table-container">
         <table
@@ -20,29 +22,29 @@
               <th mat-header-cell *matHeaderCellDef>{{ col.toUpperCase() }}</th>
               <td mat-cell *matCellDef="let expense">
                 @if (col === 'actions') {
-                  @if (!expense.isEditing) {
-                    <button matIconButton (click)="editExpense(expense)">
-                      <mat-icon>edit_circle</mat-icon>
-                    </button>
-                    <button matIconButton (click)="deleteExpense(expense)">
-                      <mat-icon>delete_circle</mat-icon>
-                    </button>
-                  } @else {
-                    <button matIconButton color="primary" (click)="patchExpense(expense)">
+                  @if (expense.isEditing) {
+                    <button matIconButton color="primary" (click)="handlePatchExpense(expense)">
                       <mat-icon>check_circle</mat-icon>
                     </button>
-                    <button matIconButton (click)="cancelEditExpense(expense)">
+                    <button matIconButton (click)="handleCancelEditExpense(expense)">
                       <mat-icon>close_circle</mat-icon>
+                    </button>
+                  } @else {
+                    <button matIconButton (click)="handleEditExpense(expense)">
+                      <mat-icon>edit_circle</mat-icon>
+                    </button>
+                    <button matIconButton (click)="handleDeleteExpense(expense)">
+                      <mat-icon>delete_circle</mat-icon>
                     </button>
                   }
                 } @else {
-                  @if (expense.isEditing && formGroups.get(expense)?.get(col)) {
-                    <form [formGroup]="formGroups.get(expense)!">
+                  @if (expense.isEditing && expensesFormGroups.get(expense)?.get(col)) {
+                    <form [formGroup]="expensesFormGroups.get(expense)!">
                       <mat-form-field appearance="outline" subscriptSizing="dynamic">
                         <input
                           [formControlName]="col"
-                          [step]="typeof expense[col] === 'number' ? '.1' : null"
-                          [type]="typeof expense[col]"
+                          [step]="typeof expense[col] === 'number' ? '.01' : null"
+                          [type]="typeof expense[col] === 'number' ? 'number' : 'text'"
                           matInput
                         />
                       </mat-form-field>
@@ -57,7 +59,7 @@
         </table>
       </div>
       <mat-paginator
-        (page)="updatePagination($event)"
+        (page)="handleExpensePagination($event)"
         [length]="expensesResource.value()?.totalCount"
         [pageIndex]="expensesResource.value()?.page"
         [pageSizeOptions]="[5, 10]"

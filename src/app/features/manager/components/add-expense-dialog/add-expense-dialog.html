@@ -1,0 +1,41 @@
+<form [formGroup]="addExpenseForm" (ngSubmit)="handleSubmit()">
+  <mat-card class="add-expense-container" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>New expense</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="add-expense-content-container">
+        @for (control of addExpenseForm.controls | keyvalue: preserveOrder; track control.key) {
+          @if (control.key !== 'categoryId') {
+            <mat-form-field>
+              <mat-label>{{ control.key.toLocaleUpperCase() }}</mat-label>
+              <input
+                [type]="control.key === 'value' ? 'number' : 'text'"
+                [step]="control.key === 'value' ? '.01' : null"
+                [formControlName]="control.key"
+                matInput
+              />
+              @if (addExpenseForm.get(control.key)?.hasError('required')) {
+                <mat-error>{{ control.key.toLocaleUpperCase() }} is required</mat-error>
+              } @else if (addExpenseForm.get(control.key)?.hasError('maxlength')) {
+                <mat-error>{{ control.key.toLocaleUpperCase() }} is too long</mat-error>
+              }
+            </mat-form-field>
+          } @else {
+            <mat-form-field>
+              <mat-label>{{ control.key.toLocaleUpperCase() }}</mat-label>
+              <mat-select [formControlName]="control.key">
+                <mat-option value="1">Something 1</mat-option>
+                <mat-option value="2">Something 2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          }
+        }
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="add-expense-card-actions-container">
+      <button matButton="outlined" type="button" (click)="handleCancel()">Cancel</button>
+      <button matButton="outlined" type="submit" [disabled]="addExpenseForm.invalid">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

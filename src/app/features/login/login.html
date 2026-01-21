@@ -1,32 +1,25 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="loginForm" (ngSubmit)="handleSubmit()">
   <mat-card class="login-card-container" appearance="outlined">
     <mat-card-header>
       <mat-card-title>Login</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="login-card-content-container">
-        <mat-form-field>
-          <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" />
-          @if (loginForm.get('email')?.hasError('required')) {
-            <mat-error>Email is required</mat-error>
-          } @else if (loginForm.get('email')?.hasError('validEmail')) {
-            <mat-error>Enter a valid email address</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" />
-          @if (loginForm.get('password')?.hasError('required')) {
-            <mat-error>Password is required</mat-error>
-          } @else if (loginForm.get('password')?.hasError('minlength')) {
-            <mat-error>Password must be at least 8 characters</mat-error>
-          }
-        </mat-form-field>
+        @for (control of loginForm.controls | keyvalue; track control.key) {
+          <mat-form-field>
+            <mat-label>{{ control.key.toLocaleUpperCase() }}</mat-label>
+            <input matInput [type]="control.key" [formControlName]="control.key" />
+            @if (loginForm.get(control.key)?.hasError('required')) {
+              <mat-error>{{ control.key.toLocaleUpperCase() }} is required</mat-error>
+            } @else if (loginForm.get(control.key)?.hasError('validEmail')) {
+              <mat-error>{{ control.key.toLocaleUpperCase() }} is not valid</mat-error>
+            }
+          </mat-form-field>
+        }
       </div>
     </mat-card-content>
     <mat-card-actions class="login-card-actions-container">
-      <button matButton="filled" [disabled]="loginForm.invalid">Submit</button>
+      <button matButton="outlined" type="submit" [disabled]="loginForm.invalid">Submit</button>
     </mat-card-actions>
   </mat-card>
 </form>

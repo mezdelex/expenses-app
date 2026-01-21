@@ -7,8 +7,7 @@ export const routes: Routes = [
     loadChildren: () => import('./features/login/login.routes').then((r) => r.LOGIN_ROUTES),
   },
   {
-    path: 'expenses',
-    loadChildren: () =>
-      import('./features/expenses/expenses.routes').then((r) => r.EXPENSES_ROUTES),
+    path: 'manager',
+    loadChildren: () => import('./features/manager/manager.routes').then((r) => r.MANAGER_ROUTES),
   },
 ];

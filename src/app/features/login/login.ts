@@ -29,7 +29,7 @@ export class Login {
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
   });
 
-  public onSubmit(): void {
+  public handleSubmit(): void {
     const { email, password } = this.loginForm.value;
     if (!email || !password) return;
 

@@ -1,10 +1,32 @@
 @use './material-theme.scss';
 
-@mixin base-column-flex {
+@mixin base-flex {
   display: flex;
-  flex-direction: column;
   flex-wrap: true;
   gap: 1rem;
+}
+
+@mixin base-column-flex {
+  @include base-flex;
+  flex-direction: column;
+}
+
+@mixin base-row-flex {
+  @include base-flex;
+  flex-direction: row;
+}
+
+.add-expense-container {
+  @include base-column-flex;
+  width: 30rem;
+}
+
+.add-expense-card-actions-container,
+.login-card-actions-container {
+  @include base-column-flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 1rem;
 }
 
 .expenses-tab-group-container {
@@ -13,15 +35,10 @@
   width: 80vw;
 }
 
+.add-expense-content-container,
 .login-card-container,
 .login-card-content-container {
   @include base-column-flex;
-}
-
-.login-card-actions-container {
-  @include base-column-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .menu-button-container {
@@ -37,6 +54,13 @@
   height: 100vh;
   justify-content: center;
   width: 100vw;
+}
+
+.spinner-container {
+  @include base-column-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10rem;
 }
 
 .table-container {

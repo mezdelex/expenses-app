@@ -1,9 +1,9 @@
-import { API_CONFIG } from '../../core/config/api.config';
-import { BaseRequest } from '../../core/models/base-request.model';
-import { Expense } from '../../core/models/expense.model';
+import { API_CONFIG } from '../../../core/config/api.config';
+import { BaseRequest } from '../../../core/models/base-request.model';
+import { Expense, PostExpense } from '../../../core/models/expense.model';
 import { HttpClient } from '@angular/common/http';
-import { PaginatedResponse } from '../../core/models/paginated-response.model';
-import { User } from '../../core/models/user.model';
+import { PaginatedResponse } from '../../../core/models/paginated-response.model';
+import { User } from '../../../core/models/user.model';
 import { firstValueFrom, Observable } from 'rxjs';
 import { inject, Injectable, resource, ResourceRef, Signal } from '@angular/core';
 
@@ -12,7 +12,7 @@ export class ExpensesService {
   private readonly _apiConfig = inject(API_CONFIG);
   private readonly _httpClient = inject(HttpClient);
 
-  public getExpensesByUserEmailResource(
+  public getExpensesPaginatedByUserEmailResource(
     user: Signal<User | null>,
     baseRequest: Signal<BaseRequest>,
   ): ResourceRef<PaginatedResponse<Expense> | undefined> {
@@ -21,7 +21,7 @@ export class ExpensesService {
       loader: ({ params }) =>
         firstValueFrom(
           this._httpClient.post<PaginatedResponse<Expense>>(
-            `${this._apiConfig.baseUrl}${this._apiConfig.expensesAllEndpoint}`,
+            `${this._apiConfig.baseUrl}${this._apiConfig.expensesPaginatedEndpoint}`,
             {
               email: params.user?.email,
               page: params.baseRequest.page,
@@ -41,6 +41,13 @@ export class ExpensesService {
   public patchExpense(expense: Expense): Observable<void> {
     return this._httpClient.patch<void>(
       `${this._apiConfig.baseUrl}${this._apiConfig.expensesPatchEndpoint}`,
+      expense,
+    );
+  }
+
+  public postExpense(expense: PostExpense): Observable<void> {
+    return this._httpClient.post<void>(
+      `${this._apiConfig.baseUrl}${this._apiConfig.expensesPostEndpoint}`,
       expense,
     );
   }

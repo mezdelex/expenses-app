@@ -25,8 +25,9 @@
             <mat-form-field>
               <mat-label>{{ control.key.toLocaleUpperCase() }}</mat-label>
               <mat-select [formControlName]="control.key">
-                <mat-option value="1">Something 1</mat-option>
-                <mat-option value="2">Something 2</mat-option>
+                @for (category of data.categoriesResource.value(); track category.id) {
+                  <mat-option [value]="category.id">{{ category.name }}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
           }
@@ -34,8 +35,8 @@
       </div>
     </mat-card-content>
     <mat-card-actions class="add-expense-card-actions-container">
-      <button matButton="outlined" type="button" (click)="handleCancel()">Cancel</button>
       <button matButton="outlined" type="submit" [disabled]="addExpenseForm.invalid">Submit</button>
+      <button matButton="outlined" type="button" (click)="handleCancel()">Cancel</button>
     </mat-card-actions>
   </mat-card>
 </form>

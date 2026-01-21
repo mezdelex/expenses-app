@@ -29,16 +29,24 @@
   margin-bottom: 1rem;
 }
 
-.expenses-tab-group-container {
-  @include base-column-flex();
-  height: 90vh;
-  width: 80vw;
+.empty-data-container,
+.spinner-container {
+  @include base-column-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10rem;
 }
 
 .add-expense-content-container,
 .login-card-container,
 .login-card-content-container {
   @include base-column-flex;
+}
+
+.manager-tab-group-container {
+  @include base-column-flex();
+  height: 90vh;
+  width: 80vw;
 }
 
 .menu-button-container {
@@ -54,13 +62,6 @@
   height: 100vh;
   justify-content: center;
   width: 100vw;
-}
-
-.spinner-container {
-  @include base-column-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10rem;
 }
 
 .table-container {

@@ -1,12 +1,13 @@
+import { Category } from '../../../../core/models/category.model';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ResourceRef } from '@angular/core';
 import { ErrorsService } from '../../../../core/errors/errors.service';
 import { ExpensesService } from '../../services/expenses.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
@@ -39,6 +40,9 @@ export class AddExpenseDialog {
     value: new FormControl(0, [Validators.required]),
     categoryId: new FormControl('', [Validators.required]),
   });
+  public readonly data = inject<{ categoriesResource: ResourceRef<Category[] | undefined> }>(
+    MAT_DIALOG_DATA,
+  );
 
   public handleCancel(): void {
     this._dialogRef.close();

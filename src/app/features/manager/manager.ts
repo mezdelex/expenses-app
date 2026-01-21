@@ -1,5 +1,6 @@
 import { AddExpenseDialog } from './components/add-expense-dialog/add-expense-dialog';
 import { AuthService } from '../../core/auth/auth.service';
+import { CategoriesService } from './services/categories.service';
 import { Category } from '../../core/models/category.model';
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
@@ -36,12 +37,13 @@ import { nameof } from '../../shared/utils/nameof.util';
     MatTabsModule,
     ReactiveFormsModule,
   ],
-  providers: [ExpensesService],
+  providers: [CategoriesService, ExpensesService],
   selector: 'app-manager',
   templateUrl: './manager.html',
 })
 export class Manager {
   private readonly _authService = inject(AuthService);
+  private readonly _categoriesService = inject(CategoriesService);
   private readonly _dialog = inject(MatDialog);
   private readonly _errorsService = inject(ErrorsService);
   private readonly _expensesBaseRequest = signal({ page: 0, pageSize: 5 });
@@ -49,10 +51,7 @@ export class Manager {
   private readonly _expensesService = inject(ExpensesService);
   private readonly _notificationService = inject(NotificationService);
 
-  public readonly CATEGORIES: Category[] = [
-    { id: '1', name: 'Food', description: 'Food expenses' },
-    { id: '2', name: 'Transport', description: 'Transport expenses' },
-  ];
+  public readonly categoriesResource = this._categoriesService.getCategoriesResource();
   public readonly displayedExpensesColumns = [
     nameof<Expense>((x) => x.id),
     nameof<Expense>((x) => x.name),
@@ -65,7 +64,7 @@ export class Manager {
     nameof<Category>((x) => x.name),
     nameof<Category>((x) => x.description),
   ];
-  public readonly expensesResource = this._expensesService.getExpensesPaginatedByUserEmailResource(
+  public readonly expensesResource = this._expensesService.getPaginatedExpensesByUserEmailResource(
     this._authService.user,
     this._expensesBaseRequest,
   );
@@ -120,7 +119,9 @@ export class Manager {
   }
 
   public handleNewExpense(): void {
-    const dialogRef = this._dialog.open(AddExpenseDialog);
+    const dialogRef = this._dialog.open(AddExpenseDialog, {
+      data: { categoriesResource: this.categoriesResource },
+    });
 
     dialogRef.afterClosed().subscribe((): void => {
       this.expensesResource.reload();

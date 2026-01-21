@@ -12,7 +12,7 @@ export class ExpensesService {
   private readonly _apiConfig = inject(API_CONFIG);
   private readonly _httpClient = inject(HttpClient);
 
-  public getExpensesPaginatedByUserEmailResource(
+  public getPaginatedExpensesByUserEmailResource(
     user: Signal<User | null>,
     baseRequest: Signal<BaseRequest>,
   ): ResourceRef<PaginatedResponse<Expense> | undefined> {

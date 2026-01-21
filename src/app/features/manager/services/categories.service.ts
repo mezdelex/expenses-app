@@ -9,7 +9,7 @@ export class CategoriesService {
   private readonly _apiConfig = inject(API_CONFIG);
   private readonly _httpClient = inject(HttpClient);
 
-  public getCategoriesListResource(): ResourceRef<Category[] | undefined> {
+  public getCategoriesResource(): ResourceRef<Category[] | undefined> {
     return resource({
       loader: () =>
         firstValueFrom(

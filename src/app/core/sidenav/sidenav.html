@@ -1,10 +1,16 @@
 <div class="menu-button-container">
-  <button matMiniFab (click)="drawer.toggle()" [hidden]="!authService.isLoggedIn()">
+  <button matMiniFab [hidden]="!authService.isLoggedIn()" (click)="handleDrawer()">
     <mat-icon>menu</mat-icon>
   </button>
 </div>
 <mat-drawer-container hasBackdrop="true">
-  <mat-drawer #drawer mode="over" position="end"></mat-drawer>
+  <mat-drawer #drawer mode="over" position="end" [opened]="opened()">
+    <div class="sidenav-drawer-container">
+      <button matButton="outlined" (click)="handleLogout()">
+        <mat-icon>logout_circle</mat-icon>Logout
+      </button>
+    </div>
+  </mat-drawer>
   <mat-drawer-content>
     <div class="sidenav-content-container">
       <router-outlet />

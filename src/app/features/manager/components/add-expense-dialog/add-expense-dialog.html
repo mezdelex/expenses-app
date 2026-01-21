@@ -29,6 +29,11 @@
                   <mat-option [value]="category.id">{{ category.name }}</mat-option>
                 }
               </mat-select>
+              @if (addExpenseForm.get(control.key)?.hasError('required')) {
+                <mat-error>{{ control.key.toLocaleUpperCase() }} is required</mat-error>
+              } @else if (addExpenseForm.get(control.key)?.hasError('maxlength')) {
+                <mat-error>{{ control.key.toLocaleUpperCase() }} is too long</mat-error>
+              }
             </mat-form-field>
           }
         }

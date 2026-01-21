@@ -13,6 +13,8 @@
               <mat-error>{{ control.key.toLocaleUpperCase() }} is required</mat-error>
             } @else if (loginForm.get(control.key)?.hasError('validEmail')) {
               <mat-error>{{ control.key.toLocaleUpperCase() }} is not valid</mat-error>
+            } @else if (loginForm.get(control.key)?.hasError('minlength')) {
+              <mat-error>{{ control.key.toLocaleUpperCase() }} is too short</mat-error>
             }
           </mat-form-field>
         }

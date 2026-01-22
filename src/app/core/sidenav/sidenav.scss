@@ -1,0 +1,24 @@
+@use '../../../styles.scss';
+
+.sidenav-content-container {
+  @include styles.base-column-flex;
+  align-items: center;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+}
+
+.sidenav-drawer-container {
+  @include styles.base-row-flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 2rem;
+  margin-top: 1.1rem;
+}
+
+.sidenav-menu-button-container {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  z-index: 99;
+}

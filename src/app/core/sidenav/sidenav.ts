@@ -8,6 +8,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   imports: [MatButtonModule, MatIconModule, MatSidenavModule, RouterOutlet],
   selector: 'app-sidenav',
+  styleUrl: './sidenav.scss',
   templateUrl: './sidenav.html',
 })
 export class Sidenav {

@@ -39,6 +39,7 @@ import { nameof } from '../../shared/utils/nameof.util';
   ],
   providers: [CategoriesService, ExpensesService],
   selector: 'app-manager',
+  styleUrl: './manager.scss',
   templateUrl: './manager.html',
 })
 export class Manager {

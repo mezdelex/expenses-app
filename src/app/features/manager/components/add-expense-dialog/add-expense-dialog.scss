@@ -1,0 +1,17 @@
+@use '../../../../../styles.scss';
+
+.add-expense-card-actions-container {
+  @include styles.base-row-flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+
+.add-expense-container {
+  @include styles.base-column-flex;
+  width: 30rem;
+}
+
+.add-expense-content-container {
+  @include styles.base-column-flex;
+}

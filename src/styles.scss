@@ -16,60 +16,12 @@
   flex-direction: row;
 }
 
-.add-expense-card-actions-container,
-.login-card-actions-container {
-  @include base-column-flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-bottom: 1rem;
-}
-
-.add-expense-container {
-  @include base-column-flex;
-  width: 30rem;
-}
-
-.add-expense-content-container,
-.login-card-container,
-.login-card-content-container {
-  @include base-column-flex;
-}
-
 .empty-data-container,
 .spinner-container {
   @include base-column-flex;
   align-items: center;
   justify-content: center;
   margin-top: 10rem;
-}
-
-.manager-tab-group-container {
-  @include base-column-flex();
-  height: 90vh;
-  width: 80vw;
-}
-
-.menu-button-container {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  z-index: 99;
-}
-
-.sidenav-content-container {
-  @include base-column-flex;
-  align-items: center;
-  height: 100vh;
-  justify-content: center;
-  width: 100vw;
-}
-
-.sidenav-drawer-container {
-  @include base-row-flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-left: 2rem;
-  margin-top: 1.1rem;
 }
 
 .table-container {

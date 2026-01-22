@@ -27,6 +27,7 @@ import { MatSelectModule } from '@angular/material/select';
   ],
   providers: [ExpensesService],
   selector: 'app-add-expense-dialog',
+  styleUrl: './add-expense-dialog.scss',
   templateUrl: './add-expense-dialog.html',
 })
 export class AddExpenseDialog {

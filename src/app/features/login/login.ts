@@ -19,6 +19,7 @@ import { validEmail } from '../../shared/validators/valid-email.validator';
     ReactiveFormsModule,
   ],
   selector: 'app-login',
+  styleUrl: './login.scss',
   templateUrl: './login.html',
 })
 export class Login {

@@ -1,6 +1,6 @@
 import { API_CONFIG } from '../../../core/config/api.config';
 import { BaseRequest } from '../../../core/models/base-request.model';
-import { Expense, PostExpense } from '../../../core/models/expense.model';
+import { Expense, ExtraExpense, PostExpense } from '../../../core/models/expense.model';
 import { HttpClient } from '@angular/common/http';
 import { PaginatedResponse } from '../../../core/models/paginated-response.model';
 import { User } from '../../../core/models/user.model';
@@ -15,12 +15,12 @@ export class ExpensesService {
   public getPaginatedExpensesByUserEmailResource(
     user: Signal<User | null>,
     baseRequest: Signal<BaseRequest>,
-  ): ResourceRef<PaginatedResponse<Expense> | undefined> {
+  ): ResourceRef<PaginatedResponse<ExtraExpense> | undefined> {
     return resource({
       params: () => ({ user: user(), baseRequest: baseRequest() }),
       loader: ({ params }) =>
         firstValueFrom(
-          this._httpClient.post<PaginatedResponse<Expense>>(
+          this._httpClient.post<PaginatedResponse<ExtraExpense>>(
             `${this._apiConfig.baseUrl}${this._apiConfig.expensesPaginatedEndpoint}`,
             {
               email: params.user?.email,

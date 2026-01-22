@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-export const validEmail = (): ValidatorFn => {
+export function validEmail(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const isValid = RegExp(
       /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g,
@@ -8,4 +8,4 @@ export const validEmail = (): ValidatorFn => {
 
     return isValid ? null : { validEmail: { value: control.value } };
   };
-};
+}

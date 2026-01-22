@@ -24,12 +24,17 @@
   margin-top: 10rem;
 }
 
-.table-container {
-  height: 50vh;
+.table-buttons-container {
+  @include base-row-flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.table-buttons-container {
+.table-container {
   @include base-column-flex;
-  align-items: flex-end;
-  justify-content: center;
+  min-height: 65vh;
+}
+
+.table-filter-container {
+  width: 20rem;
 }

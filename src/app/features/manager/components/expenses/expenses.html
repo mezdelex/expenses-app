@@ -1,18 +1,34 @@
+<div class="table-buttons-container">
+  <form class="table-filters-container" [formGroup]="expenseFilterFormGroup">
+    <mat-form-field>
+      <mat-label>Keyword</mat-label>
+      <input matInput formControlName="keyword" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="categoryId">
+        <mat-option value="">None</mat-option>
+        @for (category of categoriesResource()?.value(); track category.id) {
+          <mat-option [value]="category.id">{{ category.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+  <button matButton="outlined" color="primary" (click)="handleNewExpense()">New</button>
+</div>
+
 @if (expensesResource.isLoading()) {
   <div class="spinner-container">
     <mat-spinner />
   </div>
 } @else {
-  <div class="table-buttons-container">
-    <mat-form-field class="table-filter-container">
-      <mat-label>FILTER</mat-label>
-      <input matInput (keyup)="handleFilter($event)" #input />
-    </mat-form-field>
-    <button matButton="outlined" color="primary" (click)="handleNewExpense()">New</button>
-  </div>
   @if (expensesResource.value()?.items?.length) {
     <div class="table-container">
-      <table mat-table [dataSource]="expensesResourceDataSource" class="mat-elevation-z8">
+      <table
+        mat-table
+        [dataSource]="expensesResource.value()?.items ?? []"
+        class="mat-elevation-z8"
+      >
         <tr mat-header-row *matHeaderRowDef="displayedExpensesColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedExpensesColumns"></tr>
 
@@ -72,6 +88,7 @@
         }
       </table>
     </div>
+
     <mat-paginator
       (page)="handleExpensePagination($event)"
       [length]="expensesResource.value()?.totalCount"

@@ -1,11 +1,26 @@
 import { AddExpenseDialog } from '../add-expense-dialog/add-expense-dialog';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Category } from '../../../../core/models/category.model';
-import { Component, effect, inject, input, ResourceRef, signal } from '@angular/core';
+import {
+  Component,
+  ResourceRef,
+  WritableSignal,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { ErrorsService } from '../../../../core/errors/errors.service';
 import { Expense, ExtraExpense } from '../../../../core/models/expense.model';
+import { ExpenseFilter } from '../../../../core/models/expense-filter.model';
 import { ExpensesService } from '../../services/expenses.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,12 +28,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { NotificationService } from '../../../../core/notifications/notifications.service';
-import { genericFilter } from '../../../../shared/utils/generic-search.util';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { nameof } from '../../../../shared/utils/nameof.util';
 
 @Component({
@@ -45,7 +60,7 @@ export class Expenses {
   private readonly _authService = inject(AuthService);
   private readonly _dialog = inject(MatDialog);
   private readonly _errorsService = inject(ErrorsService);
-  private readonly _expensesBaseRequest = signal({ page: 0, pageSize: 5 });
+  private readonly _expenseFilter: WritableSignal<ExpenseFilter> = signal({ page: 0, pageSize: 5 });
   private readonly _expensesFormBuilder = inject(FormBuilder);
   private readonly _expensesService = inject(ExpensesService);
   private readonly _notificationService = inject(NotificationService);
@@ -60,20 +75,27 @@ export class Expenses {
     nameof<ExtraExpense>((x) => x.category),
     'actions',
   ];
+  public readonly expenseFilterFormGroup = new FormGroup({
+    keyword: new FormControl(null),
+    categoryId: new FormControl(null),
+  });
   public readonly expensesFormGroups = new Map<ExtraExpense, FormGroup>();
   public readonly expensesResource = this._expensesService.getPaginatedExpensesByUserEmailResource(
     this._authService.user,
-    this._expensesBaseRequest,
+    this._expenseFilter,
   );
-  public readonly expensesResourceDataSource: MatTableDataSource<ExtraExpense, MatPaginator> =
-    new MatTableDataSource();
 
   public constructor() {
-    this.expensesResourceDataSource.filterPredicate = genericFilter;
-
-    effect(() => {
-      this.expensesResourceDataSource.data = this.expensesResource.value()?.items ?? [];
-    });
+    this.expenseFilterFormGroup.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(
+          (previous, current) => JSON.stringify(previous) === JSON.stringify(current),
+        ),
+      )
+      .subscribe((values) => {
+        this._expenseFilter.update((x) => ({ ...x, ...values }));
+      });
 
     effect(() => {
       const error = this.expensesResource.error();
@@ -121,11 +143,7 @@ export class Expenses {
   }
 
   public handleExpensePagination(event: PageEvent): void {
-    this._expensesBaseRequest.set({ page: event.pageIndex, pageSize: event.pageSize });
-  }
-
-  public handleFilter(event: Event) {
-    this.expensesResourceDataSource.filter = (event.target as HTMLInputElement).value;
+    this._expenseFilter.update((x) => ({ ...x, page: event.pageIndex, pageSize: event.pageSize }));
   }
 
   public handleNewExpense(): void {

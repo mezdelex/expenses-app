@@ -20,6 +20,6 @@
   min-height: 65vh;
 }
 
-.table-filter-container {
-  width: 20rem;
+.table-filters-container {
+  @include mixins.base-row-flex;
 }

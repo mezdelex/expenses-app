@@ -1,7 +1,7 @@
-@use '../../../styles.scss';
+@use '../../../mixins.scss';
 
 .login-card-actions-container {
-  @include styles.base-column-flex;
+  @include mixins.base-column-flex;
   align-items: center;
   justify-content: space-around;
   margin-bottom: 1rem;
@@ -9,5 +9,5 @@
 
 .login-card-container,
 .login-card-content-container {
-  @include styles.base-column-flex;
+  @include mixins.base-column-flex;
 }

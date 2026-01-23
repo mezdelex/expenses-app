@@ -1,7 +1,7 @@
-@use '../../../styles.scss';
+@use '../../../mixins.scss';
 
 .sidenav-content-container {
-  @include styles.base-column-flex;
+  @include mixins.base-column-flex;
   align-items: center;
   height: 100vh;
   justify-content: center;
@@ -9,7 +9,7 @@
 }
 
 .sidenav-drawer-container {
-  @include styles.base-row-flex;
+  @include mixins.base-row-flex;
   align-items: center;
   justify-content: flex-start;
   margin-left: 2rem;

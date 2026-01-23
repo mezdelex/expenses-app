@@ -1,14 +1,7 @@
-@use '../../../styles.scss';
-
-.add-expense-card-actions-container {
-  @include styles.base-column-flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-bottom: 1rem;
-}
+@use '../../../mixins.scss';
 
 .manager-tab-group-container {
-  @include styles.base-column-flex();
+  @include mixins.base-column-flex();
   height: 90vh;
   width: 90vw;
 }

@@ -1,37 +1,22 @@
 @use './material-theme.scss';
-
-@mixin base-flex {
-  display: flex;
-  flex-wrap: true;
-  gap: 1rem;
-}
-
-@mixin base-column-flex {
-  @include base-flex;
-  flex-direction: column;
-}
-
-@mixin base-row-flex {
-  @include base-flex;
-  flex-direction: row;
-}
+@use './mixins.scss';
 
 .empty-data-container,
 .spinner-container {
-  @include base-column-flex;
+  @include mixins.base-column-flex;
   align-items: center;
   justify-content: center;
   margin-top: 10rem;
 }
 
 .table-buttons-container {
-  @include base-row-flex;
+  @include mixins.base-row-flex;
   align-items: flex-start;
   justify-content: space-between;
 }
 
 .table-container {
-  @include base-column-flex;
+  @include mixins.base-column-flex;
   min-height: 65vh;
 }
 

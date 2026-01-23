@@ -1,17 +1,17 @@
-@use '../../../../../styles.scss';
+@use '../../../../../mixins.scss';
 
 .add-expense-card-actions-container {
-  @include styles.base-row-flex;
+  @include mixins.base-row-flex;
   align-items: center;
   justify-content: space-around;
   margin-bottom: 1rem;
 }
 
 .add-expense-container {
-  @include styles.base-column-flex;
+  @include mixins.base-column-flex;
   width: 30rem;
 }
 
 .add-expense-content-container {
-  @include styles.base-column-flex;
+  @include mixins.base-column-flex;
 }

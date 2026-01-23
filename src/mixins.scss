@@ -1,0 +1,15 @@
+@mixin base-flex {
+  display: flex;
+  flex-wrap: true;
+  gap: 1rem;
+}
+
+@mixin base-column-flex {
+  @include base-flex;
+  flex-direction: column;
+}
+
+@mixin base-row-flex {
+  @include base-flex;
+  flex-direction: row;
+}

@@ -25,7 +25,7 @@
             <mat-form-field>
               <mat-label>{{ control.key.toLocaleUpperCase() }}</mat-label>
               <mat-select [formControlName]="control.key">
-                @for (category of data.categoriesResource()?.value(); track category.id) {
+                @for (category of data.categoriesResource.value(); track category.id) {
                   <mat-option [value]="category.id">{{ category.name }}</mat-option>
                 }
               </mat-select>

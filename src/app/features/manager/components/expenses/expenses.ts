@@ -130,7 +130,7 @@ export class Expenses {
 
   public handleNewExpense(): void {
     const dialogRef = this._dialog.open(AddExpenseDialog, {
-      data: { categoriesResource: this.categoriesResource },
+      data: { categoriesResource: this.categoriesResource() },
     });
 
     dialogRef.afterClosed().subscribe((): void => {

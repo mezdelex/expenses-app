@@ -3,14 +3,14 @@
     <mat-spinner />
   </div>
 } @else {
+  <div class="table-buttons-container">
+    <mat-form-field class="table-filter-container">
+      <mat-label>FILTER</mat-label>
+      <input matInput (keyup)="handleFilter($event)" #input />
+    </mat-form-field>
+    <button matButton="outlined" color="primary" (click)="handleNewExpense()">New</button>
+  </div>
   @if (expensesResource.value()?.items?.length) {
-    <div class="table-buttons-container">
-      <mat-form-field class="table-filter-container">
-        <mat-label>FILTER</mat-label>
-        <input matInput (keyup)="handleFilter($event)" #input />
-      </mat-form-field>
-      <button matButton="outlined" color="primary" (click)="handleNewExpense()">New</button>
-    </div>
     <div class="table-container">
       <table mat-table [dataSource]="expensesResourceDataSource" class="mat-elevation-z8">
         <tr mat-header-row *matHeaderRowDef="displayedExpensesColumns"></tr>
@@ -37,8 +37,9 @@
                   </button>
                 }
               } @else {
-                @if (expense.isEditing && expensesFormGroups.get(expense)?.get(col)) {
-                  <form [formGroup]="expensesFormGroups.get(expense)!">
+                @let formGroup = expensesFormGroups.get(expense);
+                @if (expense.isEditing && formGroup && formGroup.get(col)) {
+                  <form [formGroup]="formGroup">
                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
                       @if (typeof expense[col] === 'object') {
                         <mat-select [formControlName]="col">

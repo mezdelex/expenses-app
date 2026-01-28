@@ -22,6 +22,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { IntlDatePipe } from '../../../../shared/pipes/intl-date.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -38,6 +39,7 @@ import { nameof } from '../../../../shared/utils/nameof.util';
 
 @Component({
   imports: [
+    IntlDatePipe,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -135,7 +137,10 @@ export class Expenses {
             [Validators.required, Validators.maxLength(256)],
           ],
           [nameof<ExtraExpense>((x) => x.value)]: [expense.value, [Validators.required]],
-          [nameof<ExtraExpense>((x) => x.date)]: [expense.date, [Validators.required]],
+          [nameof<ExtraExpense>((x) => x.date)]: [
+            new Date(expense.date).toLocaleString(),
+            [Validators.required],
+          ],
           [nameof<ExtraExpense>((x) => x.category)]: [expense.category.id, [Validators.required]],
         }),
       );
@@ -163,6 +168,7 @@ export class Expenses {
     const patchedExpense: Expense = {
       ...expense,
       ...formGroup.value,
+      date: new Date(formGroup.value.date).toISOString(),
       categoryId: formGroup.value.category,
     };
 

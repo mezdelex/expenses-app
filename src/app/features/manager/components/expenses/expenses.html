@@ -71,7 +71,7 @@
                             typeof expense[col] === 'number'
                               ? 'number'
                               : col === 'date'
-                                ? 'datetime-local'
+                                ? 'datetime'
                                 : 'text'
                           "
                           matInput
@@ -80,7 +80,10 @@
                     </mat-form-field>
                   </form>
                 } @else {
-                  {{ expense[col]?.name ?? expense[col] }}
+                  {{
+                    expense[col]?.name ??
+                      (col === 'date' ? (expense[col] | intlDate) : expense[col])
+                  }}
                 }
               }
             </td>

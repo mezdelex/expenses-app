@@ -13,6 +13,15 @@
         }
       </mat-select>
     </mat-form-field>
+    <mat-form-field>
+      <mat-label>Date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input formControlName="minDate" matStartDate placeholder="Start date" />
+        <input formControlName="maxDate" matEndDate placeholder="End date" />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
   </form>
   <button matButton="outlined" color="primary" (click)="handleNewExpense()">New</button>
 </div>

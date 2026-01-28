@@ -24,11 +24,12 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { IntlDatePipe } from '../../../../shared/pipes/intl-date.pipe';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatOptionModule } from '@angular/material/core';
+import { MatOptionModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
@@ -41,6 +42,7 @@ import { nameof } from '../../../../shared/utils/nameof.util';
   imports: [
     IntlDatePipe,
     MatButtonModule,
+    MatDatepickerModule,
     MatFormFieldModule,
     MatIconModule,
     MatIconModule,
@@ -53,7 +55,7 @@ import { nameof } from '../../../../shared/utils/nameof.util';
     MatTableModule,
     ReactiveFormsModule,
   ],
-  providers: [ExpensesService],
+  providers: [ExpensesService, provideNativeDateAdapter()],
   selector: 'app-expenses',
   styleUrl: './expenses.scss',
   templateUrl: './expenses.html',
@@ -79,6 +81,8 @@ export class Expenses {
   ];
   public readonly expenseFilterFormGroup = new FormGroup({
     keyword: new FormControl(null),
+    minDate: new FormControl(null),
+    maxDate: new FormControl(null),
     categoryId: new FormControl(null),
   });
   public readonly expensesFormGroups = new Map<ExtraExpense, FormGroup>();
